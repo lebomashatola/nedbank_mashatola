@@ -4,39 +4,22 @@ import numpy as np
 import os
 import pandas as pd
 import requests
-from datetime import datetime, timedelta
-from typing import List, Tuple
-
-"""
-DATA SOURCES SUPPORTED
-----------------------
-1. ESPN PUBLIC DATA (no API key required)
-   - Uses public JSON feed from ESPN Fantasy / Stats
-   - Example endpoint: https://site.api.espn.com/apis/v2/sports/soccer/eng.1/athletes
-
-2. TheSportsDB (Free Tier)
-   - Example endpoint: https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?p=Messi
-
-3. LOCAL CSV
-   - User-provided historical dataset
-"""
-
+from typing import List
+import yaml
 
 # -------------------------
-# ESPN API LOADER
+# Loaders (unchanged)
 # -------------------------
+
+
 def load_espn(output_path):
-    print("📡 Fetching ESPN public data...")
-
+    print("Fetching ESPN public data...")
     url = "https://site.api.espn.com/apis/v2/sports/soccer/eng.1/athletes"
     resp = requests.get(url, timeout=10)
-
     if resp.status_code != 200:
         raise RuntimeError(f"ESPN API returned error {resp.status_code}")
-
     data = resp.json()
     player_entries = data.get("items", [])
-
     players = []
     for p in player_entries:
         players.append(
@@ -50,31 +33,21 @@ def load_espn(output_path):
                 "age": p.get("age"),
             }
         )
-
-    print(f"✔ Retrieved {len(players)} players from ESPN")
-
+    print(f"Retrieved {len(players)} players from ESPN")
     with open(output_path, "w") as f:
         json.dump(players, f, indent=4)
 
     return players
 
 
-# -------------------------
-# TheSportsDB LOADER
-# -------------------------
 def load_thesportsdb(output_path):
-    print("📡 Fetching data from TheSportsDB...")
-
-    # English Premier League player list endpoint (free)
+    print("Fetching data from TheSportsDB...")
     url = "https://www.thesportsdb.com/api/v1/json/3/searchplayers.php?t=Arsenal"
-
     resp = requests.get(url, timeout=10)
     if resp.status_code != 200:
         raise RuntimeError(f"TheSportsDB API returned error {resp.status_code}")
-
     json_data = resp.json()
     players_raw = json_data.get("player", [])
-
     players = []
     for p in players_raw:
         players.append(
@@ -89,50 +62,31 @@ def load_thesportsdb(output_path):
                 "description": p.get("strDescriptionEN"),
             }
         )
-
-    print(f"✔ Retrieved {len(players)} players from TheSportsDB")
-
+    print(f"Retrieved {len(players)} players from TheSportsDB")
     with open(output_path, "w") as f:
         json.dump(players, f, indent=4)
 
     return players
 
 
-# -------------------------
-# LOCAL CSV LOADER
-# -------------------------
 def load_local(
-    n_players: int = 200, n_weeks: int = 10, positions: List[str] = None, seed: int = 42
+    output_path,
+    n_players: int = 200,
+    n_weeks: int = 10,
+    positions: List[str] = None,
+    seed: int = 42,
 ) -> pd.DataFrame:
-    """
-    Generate synthetic player statistics for fantasy sports
-
-    Args:
-        n_players: Number of players
-        n_weeks: Number of weeks of historical data
-        positions: Player positions (e.g., ['GK', 'DEF', 'MID', 'FWD'])
-
-    Returns:
-        DataFrame with player stats across multiple weeks
-    """
     np.random.seed(seed)
-
     if positions is None:
         positions = ["GK", "DEF", "MID", "FWD"]
 
-    # Base stats by position
     position_base_points = {"GK": 3.5, "DEF": 4.0, "MID": 5.0, "FWD": 5.5}
-
     position_base_salary = {"GK": 5.0, "DEF": 6.0, "MID": 7.5, "FWD": 8.0}
-
     players = []
+
     for i in range(n_players):
         position = np.random.choice(positions)
-
-        # Player quality (some players are just better)
-        quality = np.random.normal(1.0, 0.3)
-        quality = np.clip(quality, 0.5, 2.0)
-
+        quality = np.clip(np.random.normal(1.0, 0.3), 0.5, 2.0)
         player_data = {
             "player_id": i,
             "name": f"Player_{i}",
@@ -143,39 +97,57 @@ def load_local(
             "quality": quality,
         }
 
-        # Generate weekly points
         base_points = position_base_points[position] * quality
         for week in range(n_weeks):
-            # Add form (recent performance affects future)
             form = np.random.normal(0, 1.5)
             points = np.random.poisson(max(0, base_points + form))
             player_data[f"points_week_{week}"] = points
-
         players.append(player_data)
 
     players = pd.DataFrame(players)
     players["salary"] = players["salary"].clip(4.0, 13.0)
+    players.to_json(output_path, orient="records", indent=4)
 
     return players
 
 
+# -------------------------
+# CONFIG FILE LOADER
+# -------------------------
+def load_config(config_path: str):
+    with open(config_path, "r") as f:
+        if config_path.endswith((".yaml", ".yml")):
+            return yaml.safe_load(f)
+        else:
+            return json.load(f)
+
+
+# -------------------------
+# MAIN
+# -------------------------
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-
     parser.add_argument(
-        "--source", type=str, required=True, choices=["espn", "thesportsdb", "local"]
+        "--config", type=str, required=True, help="Path to config file (JSON or YAML)"
     )
-    parser.add_argument("--output", type=str, required=True)
-
     args = parser.parse_args()
 
-    os.makedirs(os.path.dirname(args.output), exist_ok=True)
+    config = load_config(args.config)
+    dataset_config = config.get("data", {})
 
-    if args.source == "espn":
-        load_espn(args.output)
-    elif args.source == "thesportsdb":
-        load_thesportsdb(args.output)
+    source = dataset_config.get("source", "local")
+    output = dataset_config.get("output", "data/players.json")
+    os.makedirs(os.path.dirname(output), exist_ok=True)
+
+    print(f"Using dataset source: {source}")
+    print(f"Output path: {output}")
+
+    if source == "espn":
+        load_espn(output)
+    elif source == "thesportsdb":
+        load_thesportsdb(output)
     else:
-        load_local(args.output)
+        local_params = dataset_config.get("local_params", {})
+        load_local(output_path=output, **local_params)
 
-    print(f"Data acquisition complete → {args.output}")
+    print(f"Data acquisition complete → {output}")

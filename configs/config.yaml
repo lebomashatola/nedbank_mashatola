@@ -1,12 +1,12 @@
-# -------------------------
+
 # DATA SETTINGS
-# -------------------------
+#-------------------------
 data:
   source: "synthetic"        # options: "synthetic", "espn", "thesportsdb"
-  league: "Premier League"  # used for API datasets
+  league: "Premier League"  # for API datasets
   opposition_team: null      # optional, filter players based on upcoming opposition
 
-# -------------------------
+
 # TDA SETTINGS
 # -------------------------
 tda:
@@ -15,7 +15,7 @@ tda:
   output_features: "data/tda_features.npy"
   output_correlation: "data/feature_correlation.npy"
 
-# -------------------------
+
 # MODEL SETTINGS
 # -------------------------
 model:
@@ -31,13 +31,13 @@ model:
     subsample: 0.8
     colsample_bytree: 0.8
   transformer:
-    model_name: "google/vit-base-patch16-224-in21k" # HuggingFace model (Apache 2.0)
+    model_name: "google/vit-base-patch16-224-in21k" 
     epochs: 20
     learning_rate: 1e-4
     batch_size: 16
     device: "cpu"           # "cuda" if GPU available
 
-# -------------------------
+
 # OPTIMIZATION SETTINGS
 # -------------------------
 optimizer:
@@ -50,7 +50,7 @@ optimizer:
     MID: 4
     FWD: 2
 
-# -------------------------
+
 # VISUALIZATION SETTINGS
 # -------------------------
 visualization:
@@ -59,7 +59,7 @@ visualization:
   show_fatigue: true
   show_predicted_score: true
 
-# -------------------------
+
 # SHELL SCRIPT SETTINGS
 # -------------------------
 scripts:
