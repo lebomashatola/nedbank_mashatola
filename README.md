@@ -173,28 +173,5 @@ dataset: "espn"
 league: "English Premier League"
 ```
 
----
-
-## 📦 Shell Scripts Overview
-
-### **obtain_data.sh**
-
-Downloads new player stats.
-
-### **run_tda.sh**
-
-Runs TDA → Persistence Landscape encoding.
-
-### **train_model.sh**
-
-Trains the selected ML model.
-
-### **run_optimizer.sh**
-
-Runs integer programming lineup selection.
-
-### **main.sh**
-
-Full pipeline automation.
 
 
