@@ -197,17 +197,4 @@ Runs integer programming lineup selection.
 
 Full pipeline automation.
 
----
 
-## ✨ Outro
-
-This system gives you a **research-grade AI-powered fantasy team optimizer** with TDA encoding, Hugging Face modeling, and a fully automated pipeline.
-
-If you want:
-
-* Dockerfile
-* CI/CD deployment to GitHub Actions
-* AWS/GCP deployment
-* Multi‑sport extension
-
-Just ask!
