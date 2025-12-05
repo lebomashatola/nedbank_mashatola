@@ -1,8 +1,11 @@
 import argparse
 import json
+import numpy as np
 import os
 import pandas as pd
 import requests
+from datetime import datetime, timedelta
+from typing import List, Tuple
 
 """
 DATA SOURCES SUPPORTED
@@ -98,25 +101,60 @@ def load_thesportsdb(output_path):
 # -------------------------
 # LOCAL CSV LOADER
 # -------------------------
-def load_local(output_path):
-    print("📁 Loading local CSV...")
+def load_local(
+    n_players: int = 200, n_weeks: int = 10, positions: List[str] = None, seed: int = 42
+) -> pd.DataFrame:
+    """
+    Generate synthetic player statistics for fantasy sports
 
-    csv_path = "data/local_players.csv"
+    Args:
+        n_players: Number of players
+        n_weeks: Number of weeks of historical data
+        positions: Player positions (e.g., ['GK', 'DEF', 'MID', 'FWD'])
 
-    if not os.path.exists(csv_path):
-        raise FileNotFoundError(
-            "Local CSV not found: data/local_players.csv\n"
-            "Please place your dataset under /data."
-        )
+    Returns:
+        DataFrame with player stats across multiple weeks
+    """
+    np.random.seed(seed)
 
-    df = pd.read_csv(csv_path)
+    if positions is None:
+        positions = ["GK", "DEF", "MID", "FWD"]
 
-    players = df.to_dict(orient="records")
+    # Base stats by position
+    position_base_points = {"GK": 3.5, "DEF": 4.0, "MID": 5.0, "FWD": 5.5}
 
-    print(f"✔ Loaded {len(players)} players from local CSV")
+    position_base_salary = {"GK": 5.0, "DEF": 6.0, "MID": 7.5, "FWD": 8.0}
 
-    with open(output_path, "w") as f:
-        json.dump(players, f, indent=4)
+    players = []
+    for i in range(n_players):
+        position = np.random.choice(positions)
+
+        # Player quality (some players are just better)
+        quality = np.random.normal(1.0, 0.3)
+        quality = np.clip(quality, 0.5, 2.0)
+
+        player_data = {
+            "player_id": i,
+            "name": f"Player_{i}",
+            "position": position,
+            "team": f"Team_{np.random.randint(0, 20)}",
+            "salary": position_base_salary[position] * quality
+            + np.random.normal(0, 0.5),
+            "quality": quality,
+        }
+
+        # Generate weekly points
+        base_points = position_base_points[position] * quality
+        for week in range(n_weeks):
+            # Add form (recent performance affects future)
+            form = np.random.normal(0, 1.5)
+            points = np.random.poisson(max(0, base_points + form))
+            player_data[f"points_week_{week}"] = points
+
+        players.append(player_data)
+
+    players = pd.DataFrame(players)
+    players["salary"] = players["salary"].clip(4.0, 13.0)
 
     return players
 
@@ -140,4 +178,4 @@ if __name__ == "__main__":
     else:
         load_local(args.output)
 
-    print(f"🎉 Data acquisition complete → {args.output}")
+    print(f"Data acquisition complete → {args.output}")
