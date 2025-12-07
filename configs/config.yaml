@@ -14,15 +14,15 @@ synthetic:
 
 # Transformer model configuration for embeddings 
 training:
-  generate_embeddings: True
+  generate_embeddings: true
   epochs: 500
   learning_rate: 0.001
   batch_size: 64
 
 model:
-  embedding_dim: 1024
+  embedding_dim: 256
   num_heads: 8
-  hidden_dim: 2048 # dimension of the output feedforward network
+  hidden_dim: 512 # dimension of the output feedforward network
 
 # Lineup optimization parameters
 optimizer:
@@ -40,13 +40,13 @@ ml_model:
   tune: true
   random_state: 42
   hyperparams:
-    n_estimators: [100, 200]
-    max_depth: [5, 10]         
+    n_estimators: [50, 200]
+    max_depth: [5, 15]         
 
 # Opponent team features for matchup consideration
 opponent_features:
   Elo_rating: 1450
-  avg_goals_conceded: 1.2
-  possession_pct: 52
-  counter_attack_strength: 0.7
+  avg_goals_conceded: 0.6
+  possession_pct: 64
+  counter_attack_strength: 0.75
   home_advantage: 1  # 1 if home, 0 if away

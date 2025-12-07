@@ -1,56 +1,85 @@
 # main.py
+
+import sys
 import os
 import subprocess
-from data_loader import PlayerFetcher
-from lineup_generator import Config, generate_lineups
-from embeddings import main as tabtransformer_main
+from src.config import Config
+
+# Ensure project root is on sys.path
+ROOT = os.path.dirname(os.path.abspath(__file__))
+if ROOT not in sys.path:
+    sys.path.append(ROOT)
+if os.path.join(ROOT, "src") not in sys.path:
+    sys.path.append(os.path.join(ROOT, "src"))
+
+from src.data_loader import PlayerFetcher
+from src.embeddings import (
+    generate_embeddings,
+)  # embedding generation uses logging internally
+
+# from src.lineup_generator import generate_lineups  # Only used in Streamlit app
 
 
-def fetch_player_data(cfg):
+def fetch_player_data(cfg: Config):
     """
-    Fetch or generate player data based on configuration.
+    Fetch or generate player data according to the config file.
     """
-    fetcher = PlayerFetcher(cfg.config_path)
-    
-    if cfg.opponent_features.get("use_tsdb", False):
-        print("[INFO] Fetching data from TheSportsDB...")
+    print("Fetching / generating player data...")
+
+    fetcher = PlayerFetcher(cfg=cfg)  # Use the same Config object
+
+    if cfg.source.lower() == "tsdb":
+        print("Using TheSportsDB API...")
         df = fetcher.fetch_tsdb()
     else:
-        print("[INFO] Generating synthetic player data...")
+        print("Generating synthetic dataset...")
         df = fetcher.generate_synthetic()
-    
-    print(f"[INFO] Data shape: {df.shape}")
-    print(df.head())
+
+    print(f"Player dataframe loaded. Shape = {df.shape}")
     return df
 
-def generate_embeddings():
-    """
-    Run the TabTransformer embeddings extraction.
-    """
-    print("[INFO] Generating embeddings via TabTransformer...")
-    tabtransformer_main()
 
 def launch_streamlit_app():
     """
     Launch the Streamlit dashboard.
     """
-    streamlit_file = os.path.join(os.path.dirname(__file__), "app.py")
-    print(f"[INFO] Launching Streamlit app → {streamlit_file}")
-    subprocess.run(["streamlit", "run", streamlit_file])
+    project_root = os.path.dirname(os.path.abspath(__file__))
+    app_path = os.path.join(project_root, "app.py")
+    try:
+        print(f"Launching Streamlit app: {app_path}")
+        subprocess.run(["streamlit", "run", app_path], cwd=project_root, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Streamlit failed to launch: {e}")
+
 
 def main():
-    # Load config
-    cfg = Config("config.yaml")
-    
-    # Step 1: Fetch or generate player data
-    df_players = fetch_player_data(cfg)
-    
-    # Step 2: Generate embeddings (optional)
-    if cfg.config.get("training", {}).get("generate_embeddings", True):
-        generate_embeddings()
+    """
+    Main orchestration program:
+    1. Load config
+    2. Fetch or generate player data
+    3. Generate embeddings (with logging)
+    4. Launch Streamlit dashboard
+    """
+    print("===== Starting main.py =====")
 
-    # Step 3: Lineups triggered inside Streamlist and dashboard lanched 
+    # Load global config
+    cfg = Config("config.yaml")
+    print("Config loaded successfully.")
+    print(f"Full Configuration:\n{cfg.config}")
+
+    # Step 1 — Fetch or generate data
+    df_players = fetch_player_data(cfg)
+    print("Player data ready.")
+
+    # Step 2 — Generate embeddings (logging occurs inside generate_embeddings)
+    if cfg.config.get("training", {}).get("generate_embeddings", False):
+        generate_embeddings(cfg=cfg)
+    else:
+        print("Skipping embedding generation (disabled in config).")
+
+    # Step 3 — Optimization + ML handled inside Streamlit app
     launch_streamlit_app()
+
 
 if __name__ == "__main__":
     main()
