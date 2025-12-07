@@ -95,16 +95,7 @@ cfg = Config()
 generate_embeddings(cfg)
 ```
 
-### 9. Train ML Model
-```python
-from src.lineup_generator import train_ml_model
-from src.config import Config
-
-cfg = Config()
-train_ml_model(cfg)
-```
-
-### 10. optimize Lineup
+### 9. optimize Lineup
 ```python
 from src.lineup_generator import generate_lineups
 from src.config import Config
@@ -114,7 +105,7 @@ lineups = generate_lineups(cfg)
 print(lineups)
 ```
 
-### 11. Streamlit
+### 10. Streamlit
 ```python
 from src.streamlit_app import launch_streamlit_app
 
