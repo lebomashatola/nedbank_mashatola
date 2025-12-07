@@ -10,7 +10,6 @@ This repository provides a **Fantasy Football Player Performance System** levera
 - **Embeddings Generation**: Generate rich feature embeddings from categorical and continuous player data using **Tabular Transformer (TabTransformer)** models.
 - **Machine Learning Models**: Predict player performance using:
   - RandomForest
-  - XGBoost
   - GradientBoosting (optional)
 - **Lineup Optimization**: Select optimal fantasy football lineups based on predicted points, salary constraints, and positional requirements using **linear programming**.
 - **Visualization**: Explore player stats and generated lineups interactively with **Streamlit**.
