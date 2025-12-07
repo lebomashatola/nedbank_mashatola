@@ -46,7 +46,7 @@ ml_model:
 # Opponent team features for matchup consideration
 opponent_features:
   Elo_rating: 1450
-  avg_goals_conceded: 0.6
-  possession_pct: 38
+  avg_goals_conceded: 1.71
+  possession_pct: 48.5
   counter_attack_strength: 0.71
   home_advantage: 1  # 1 if home, 0 if away
