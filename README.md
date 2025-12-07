@@ -24,7 +24,7 @@ This repository provides a **Fantasy Football Player Performance System** levera
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/fantasy-football.git
+git clone https://github.com/lebomashatola/fantasy-football.git
 cd fantasy-football
 ```
 
