@@ -67,7 +67,11 @@ ml_model:
 
 ### 5. Run the script
 ```bash
-python main.py
+python main.py 
+```
+OR 
+```bash
+bash run_main.sh
 ```
 
 ### 6. Featch player data 
