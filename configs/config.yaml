@@ -8,14 +8,14 @@ data:
 # Synthetic data generation parameters
 synthetic:
   n_players: 200
-  n_weeks: 10
+  n_weeks: 38
   positions: ["GK", "DEF", "MID", "FWD"]
   seed: 123
 
 # Transformer model configuration for embeddings 
 training:
   generate_embeddings: true
-  epochs: 500
+  epochs: 1000
   learning_rate: 0.001
   batch_size: 64
 
@@ -47,6 +47,6 @@ ml_model:
 opponent_features:
   Elo_rating: 1450
   avg_goals_conceded: 0.6
-  possession_pct: 64
-  counter_attack_strength: 0.75
+  possession_pct: 38
+  counter_attack_strength: 0.71
   home_advantage: 1  # 1 if home, 0 if away
