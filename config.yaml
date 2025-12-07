@@ -1,0 +1,52 @@
+
+# Configuration file for the football player performance prediction system
+data:
+  leagues:
+    - EPL        # EPL, LaLiga, Bundesliga, SerieA, Ligue1 (API call doent work for other leagues)
+  source: synthetic   # options: "tsdb" OR "synthetic" 
+
+# Synthetic data generation parameters
+synthetic:
+  n_players: 200
+  n_weeks: 10
+  positions: ["GK", "DEF", "MID", "FWD"]
+  seed: 123
+
+# Transformer model configuration for embeddings 
+training:
+  generate_embeddings: True
+  epochs: 500
+  learning_rate: 0.001
+  batch_size: 64
+
+model:
+  embedding_dim: 1024
+  num_heads: 8
+  hidden_dim: 2048 # dimension of the output feedforward network
+
+# Lineup optimization parameters
+optimizer:
+  budget: 100.0         
+  roster_size: 11       
+  positions:
+    GK: 1               
+    DEF: 4              
+    MID: 4              
+    FWD: 2    
+
+# Machine learning model configuration
+ml_model:
+  type: RandomForest       # options: RandomForest, GradientBoosting
+  tune: true
+  random_state: 42
+  hyperparams:
+    n_estimators: [100, 200]
+    max_depth: [5, 10]         
+
+# Opponent team features for matchup consideration
+opponent_features:
+  Elo_rating: 1450
+  avg_goals_conceded: 1.2
+  possession_pct: 52
+  counter_attack_strength: 0.7
+  home_advantage: 1  # 1 if home, 0 if away
