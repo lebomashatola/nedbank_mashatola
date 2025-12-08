@@ -30,16 +30,20 @@ class TabularDataset(Dataset):
         return len(self.X_cont) if self.X_cont is not None else len(self.X_cat)
 
     def __getitem__(self, idx):
+        # categorical features
         cat = (
-            torch.tensor(self.X_cat[idx])
+            torch.tensor(self.X_cat[idx], dtype=torch.long)
             if self.X_cat is not None
             else torch.tensor([], dtype=torch.long)
         )
+
+        # continuous features
         cont = (
-            torch.tensor(self.X_cont[idx])
+            torch.tensor(self.X_cont[idx], dtype=torch.float32)
             if self.X_cont is not None
             else torch.tensor([], dtype=torch.float32)
         )
+
         return cat, cont
 
 
@@ -173,14 +177,23 @@ def generate_embeddings(cfg: Optional[Config] = None):
     # Save embeddings
     model.eval()
     all_cat = (
-        torch.tensor(df[categorical_cols].values.astype(np.int64), device=device)
+        torch.tensor(
+            df[categorical_cols].values.astype(np.int64),
+            dtype=torch.long,
+            device=device,
+        )
         if categorical_cols
-        else torch.tensor([])
+        else torch.tensor([], dtype=torch.long, device=device)
     )
+
     all_cont = (
-        torch.tensor(df[continuous_cols].values.astype(np.float32), device=device)
+        torch.tensor(
+            df[continuous_cols].values.astype(np.float32),
+            dtype=torch.float32,
+            device=device,
+        )
         if continuous_cols
-        else torch.tensor([])
+        else torch.tensor([], dtype=torch.float32, device=device)
     )
 
     with torch.no_grad():

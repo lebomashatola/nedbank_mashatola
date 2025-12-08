@@ -15,7 +15,7 @@ synthetic:
 # Transformer model configuration for embeddings 
 training:
   generate_embeddings: true
-  epochs: 1000
+  epochs: 500
   learning_rate: 0.001
   batch_size: 64
 
