@@ -6,14 +6,14 @@ This repository provides a **Fantasy Football Player Performance System** levera
 
 ## Features
 
-- **Data Acquisition**: Fetch real player data from TheSportsDB API or generate synthetic datasets for testing.
-- **Embeddings Generation**: Generate rich feature embeddings from categorical and continuous player data using **Tabular Transformer (TabTransformer)** models.
+- **Data Acquisition**: Fetch real player data from TheSportsDB API or generate synthetic datasets.
+- **Embeddings Generation**: Generate rich feature embeddings from categorical and continuous player data using a **Tabular Transformer** model.
 - **Machine Learning Models**: Predict player performance using:
   - RandomForest
   - GradientBoosting (optional)
 - **Lineup Optimization**: Select optimal fantasy football lineups based on predicted points, salary constraints, and positional requirements using **linear programming**.
 - **Visualization**: Explore player stats and generated lineups interactively with **Streamlit**.
-- **Unified Logging**: Each run generates a dedicated log file recording data loading, model training, and embedding generation progress.
+- **Logging**: Each run generates a dedicated log file recording embedding generation progress.
 
 ---
 
@@ -40,10 +40,9 @@ pip install -r requirements.txt
 ```
 
 ### 4. Configuration
-Copy or create configs/config.yaml in the root directory. Example sections:
+Features a configs/config.yaml file found in the configs directory. Example sections:
 
 ```yaml
-data:
 data:
   leagues: ["EPL", "LaLiga"]
   source: "tsdb"
@@ -83,14 +82,7 @@ cfg = Config()
 fetch_player_data(cfg)
 ```
 
-### 7. Launch Streamlit App
-```python
-from src.streamlit_app import launch_streamlit_app
-
-launch_streamlit_app()
-```
-
-### 8. Generate Embeddings
+### 7. Generate Embeddings
 ```python
 from src.embeddings import generate_embeddings
 from src.config import Config
@@ -99,7 +91,7 @@ cfg = Config()
 generate_embeddings(cfg)
 ```
 
-### 9. optimize Lineup
+### 8. optimize Lineup
 ```python
 from src.lineup_generator import generate_lineups
 from src.config import Config
@@ -109,7 +101,7 @@ lineups = generate_lineups(cfg)
 print(lineups)
 ```
 
-### 10. Streamlit
+### 9. Streamlit
 ```python
 from src.streamlit_app import launch_streamlit_app
 
