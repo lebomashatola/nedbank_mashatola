@@ -190,8 +190,5 @@ def generate_lineups(opponent_features=None, cfg: Config = None):
     return ml_lineup, ml_points, top_lineup, mean_random_points, top_points
 
 
-# -------------------------
-# Execute as script
-# -------------------------
 if __name__ == "__main__":
     generate_lineups()

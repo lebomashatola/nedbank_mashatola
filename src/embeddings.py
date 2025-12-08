@@ -8,15 +8,11 @@ from typing import List, Optional
 from src.config import Config
 from src.logger import setup_logger
 
-# -------------------------
 # Setup logger
-# -------------------------
 logger = setup_logger("Embedding")
 
 
-# -------------------------
 # Dataset wrapper for tabular data
-# -------------------------
 class TabularDataset(Dataset):
     """PyTorch Dataset wrapper to handle tabular data with categorical and continuous features."""
 
@@ -47,9 +43,7 @@ class TabularDataset(Dataset):
         return cat, cont
 
 
-# -------------------------
 # TabTransformer model for tabular embeddings
-# -------------------------
 class TabTransformer(nn.Module):
     """Simple TabTransformer with embeddings, attention, and feed-forward network."""
 
@@ -105,9 +99,7 @@ class TabTransformer(nn.Module):
         return x, reconstructed
 
 
-# -------------------------
 # Function to generate embeddings
-# -------------------------
 def generate_embeddings(cfg: Optional[Config] = None):
     if cfg is None:
         cfg = Config()
@@ -198,9 +190,6 @@ def generate_embeddings(cfg: Optional[Config] = None):
         logger.info(f"Saved embeddings → {emb_file}")
 
 
-# -------------------------
-# Execute as script
-# -------------------------
 if __name__ == "__main__":
     cfg = Config()
     generate_embeddings(cfg)
