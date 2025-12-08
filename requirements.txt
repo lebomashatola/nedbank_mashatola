@@ -8,3 +8,5 @@ streamlit>=1.30
 torch>=2.1
 transformers==4.57.3
 tqdm>=4.66
+scikit-learn==1.5.1
+torch==2.3.1

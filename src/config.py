@@ -8,7 +8,7 @@ class Config:
     Automatically loads YAML config and provides easy access to all sections.
     """
 
-    def __init__(self, config_path: str = "config.yaml"):
+    def __init__(self, config_path: str = "config.yaml"): #Users should change the congig.yaml file to run different experiments.
         # Base directory = project root (parent of src)
         self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.config_path = os.path.join(self.base_dir, "configs", config_path)

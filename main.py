@@ -1,7 +1,6 @@
-# main.py
-
 import sys
 import os
+import argparse
 import subprocess
 from src.config import Config
 
@@ -12,12 +11,11 @@ if ROOT not in sys.path:
 if os.path.join(ROOT, "src") not in sys.path:
     sys.path.append(os.path.join(ROOT, "src"))
 
+# Load rest of modules
 from src.data_loader import PlayerFetcher
 from src.embeddings import (
     generate_embeddings,
-)  # embedding generation uses logging internally
-
-# from src.lineup_generator import generate_lineups  # Only used in Streamlit app
+)  
 
 
 def fetch_player_data(cfg: Config):
@@ -26,7 +24,7 @@ def fetch_player_data(cfg: Config):
     """
     print("Fetching / generating player data...")
 
-    fetcher = PlayerFetcher(cfg=cfg)  # Use the same Config object
+    fetcher = PlayerFetcher(cfg=cfg)  
 
     if cfg.source.lower() == "tsdb":
         print("Using TheSportsDB API...")
@@ -60,10 +58,21 @@ def main():
     3. Generate embeddings (with logging)
     4. Launch Streamlit dashboard
     """
+
+    # Ensure --config argument is parsed during main.py call
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config",
+        type=str,
+        default="config.yaml",
+        help="Name of YAML config file inside configs/ directory"
+    )
+    args = parser.parse_args()
+
     print("===== Starting main.py =====")
 
     # Load global config
-    cfg = Config("config.yaml")
+    cfg = Config(args.config)
     print("Config loaded successfully.")
     print(f"Full Configuration:\n{cfg.config}")
 
@@ -71,7 +80,7 @@ def main():
     df_players = fetch_player_data(cfg)
     print("Player data ready.")
 
-    # Step 2 — Generate embeddings (logging occurs inside generate_embeddings)
+    # Step 2 — Generate embeddings
     if cfg.config.get("training", {}).get("generate_embeddings", False):
         generate_embeddings(cfg=cfg)
     else:

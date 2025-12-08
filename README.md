@@ -66,11 +66,11 @@ ml_model:
 
 ### 5. Run the script
 ```bash
-python main.py 
+python main.py --config config.yaml
 ```
 OR 
 ```bash
-bash run_main.sh
+bash run_main.sh --config config.yaml
 ```
 
 ### 6. Featch player data 

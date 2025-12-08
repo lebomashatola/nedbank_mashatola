@@ -7,12 +7,12 @@ st.title("Fantasy Football Optimal Lineup Against Opponent")
 
 # Sidebar for opponent features
 st.sidebar.header("Opponent Features")
-elo = st.sidebar.slider("Opponent Elo", 1000, 2000, 1450)
+elo = st.sidebar.slider("Opponent Strength Index", 1000, 2000, 1450)
 avg_goals = st.sidebar.slider("Opponent Avg Goals Conceded", 0.0, 5.0, 1.2)
 home_adv = st.sidebar.checkbox("Home Advantage", True)
 
 opponent_features = {
-    "Elo_rating": elo,
+    "Opponent_Strength_Index": elo,
     "avg_goals_conceded": avg_goals,
     "home_advantage": int(home_adv),
 }
